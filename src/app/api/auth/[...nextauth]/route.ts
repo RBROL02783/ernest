@@ -1,17 +1,6 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-
-function getUsers() {
-  const raw = process.env.ERNEST_USERS ?? "";
-  return raw
-    .split("|")
-    .filter(Boolean)
-    .map((entry) => {
-      const [email, hashedPassword, name] = entry.split(":");
-      return { email, hashedPassword, name: name || email.split("@")[0] };
-    });
-}
+import { verifyUser } from "@/lib/users";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -24,17 +13,8 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const users = getUsers();
-        const user = users.find(
-          (u) => u.email.toLowerCase() === credentials.email.toLowerCase()
-        );
+        const user = await verifyUser(credentials.email, credentials.password);
         if (!user) return null;
-
-        const valid = await bcrypt.compare(
-          credentials.password,
-          user.hashedPassword
-        );
-        if (!valid) return null;
 
         return { id: user.email, email: user.email, name: user.name };
       },

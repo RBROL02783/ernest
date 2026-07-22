@@ -94,6 +94,16 @@ function LoginForm() {
             {loading ? "Se conectează…" : "Intră în cont"}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Nu ai cont?{" "}
+          <a
+            href="/register"
+            className="font-medium text-indigo-11 underline-offset-2 hover:underline"
+          >
+            Creează cont
+          </a>
+        </p>
       </div>
     </div>
   );
