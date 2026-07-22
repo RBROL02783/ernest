@@ -9,11 +9,13 @@ import {
   FlaskConical,
   Gauge,
   Home,
+  LogOut,
   Monitor,
   Moon,
   NotebookPen,
   Sun,
 } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { getActiveGuide, useGuideStore } from "@/lib/guides";
 import { getActiveSurvey, useSurveyStore } from "@/lib/surveys";
 
@@ -38,7 +40,7 @@ const sections: {
   },
 ];
 
-const HIDDEN_PREFIXES = ["/sign-in", "/sign-up"];
+const HIDDEN_PREFIXES = ["/login"];
 
 const THEME_OPTIONS = [
   { value: "light", label: "Light theme", icon: Sun },
@@ -86,6 +88,7 @@ function ThemeToggle() {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const guideStore = useGuideStore();
   const surveyStore = useSurveyStore();
   // localStorage only exists client-side; render the counts after mount to
@@ -152,6 +155,20 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-sidebar-border px-3 py-3">
+        {session?.user && (
+          <div className="mb-2 flex items-center justify-between">
+            <span className="truncate text-xs font-medium text-muted-foreground">
+              {session.user.name || session.user.email}
+            </span>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              title="Deconectare"
+              className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            >
+              <LogOut className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          </div>
+        )}
         <ThemeToggle />
       </div>
     </aside>

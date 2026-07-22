@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/components/AuthProvider";
 import { Sidebar } from "@/components/Sidebar";
 import "./globals.css";
 
@@ -39,18 +40,20 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <ThemeProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <div
-              id="main-content"
-              tabIndex={-1}
-              className="flex min-w-0 flex-1 flex-col"
-            >
-              {children}
+        <AuthProvider>
+          <ThemeProvider>
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <div
+                id="main-content"
+                tabIndex={-1}
+                className="flex min-w-0 flex-1 flex-col"
+              >
+                {children}
+              </div>
             </div>
-          </div>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
