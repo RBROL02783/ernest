@@ -1,5 +1,25 @@
-import { kv } from "@vercel/kv";
+import { createClient } from "@vercel/kv";
 import bcrypt from "bcryptjs";
+
+// Vercel storage integrations can prefix env var names (e.g. ernest_storage_KV_REST_API_URL)
+function resolveEnv(suffix: string): string | undefined {
+  if (process.env[suffix]) return process.env[suffix];
+  const prefixedKey = Object.keys(process.env).find((key) =>
+    key.endsWith(`_${suffix}`)
+  );
+  return prefixedKey ? process.env[prefixedKey] : undefined;
+}
+
+const kvUrl = resolveEnv("KV_REST_API_URL");
+const kvToken = resolveEnv("KV_REST_API_TOKEN");
+
+if (!kvUrl || !kvToken) {
+  throw new Error(
+    "Lipsesc variabilele de mediu KV_REST_API_URL / KV_REST_API_TOKEN. Verifică integrarea Storage din Vercel."
+  );
+}
+
+const kv = createClient({ url: kvUrl, token: kvToken });
 
 export interface StoredUser {
   email: string;
